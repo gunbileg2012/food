@@ -2,6 +2,7 @@ require("@babel/polyfill");
 import Search from './model/search';
 import {elements, renderLoader, clearLoader} from './view/base';
 import * as SearchView from './view/searchView';
+import * as listView from './view/listView';
 import Recipe from './model/Recipe';
 import {renderRecipe, clearRecipe, highlightSelectedRecipe} from './view/recipeView';
 import List from './model/List';
@@ -71,16 +72,33 @@ import List from './model/List';
         state.recipe.calcHumanCount(state.recipe);
         // 6) Жороо дэлгэцэнд харуулна
         renderRecipe(state.recipe);
-        console.log(state);
     }
 
     //window.addEventListener("load", controlRecipe);
    // window.addEventListener("hashchange", controlRecipe);
     ['load', 'hashchange'].forEach(event=>  window.addEventListener(event, controlRecipe));
 
-    
+    const controlList = () => {
+        listView.clearListRender();
+        // Найрлагын загвар үүсгэн
+        state.list = new List();
+        // Уг моделрүү бүх моделийг үүсгэнэ
+        state.recipe.ingredients.forEach(e=> {
+           let ritem =  state.list.addItem(e);
+            listView.renderItem(ritem);
+        });
+    }
+
     elements.recipeDiv.addEventListener("click", e=>{
-       if(e.target.matches('.recipe__btn, .recipe__btn, *')){
-           console.log('btn');
+       if(e.target.matches('.recipe__btn, .recipe__btn *')){
+        controlList();
        }
+    });
+
+    elements.shoppingListDiv.addEventListener("click", e=> {
+        const id = e.target.closest('.shopping__item').dataset.itemid;
+        if(id){
+            state.list.deleteItem(id);
+            listView.deleteItem(id);
+        }
     });
