@@ -3,9 +3,11 @@ import Search from './model/search';
 import {elements, renderLoader, clearLoader} from './view/base';
 import * as SearchView from './view/searchView';
 import * as listView from './view/listView';
+import * as likeView from './view/likeView';
 import Recipe from './model/Recipe';
 import {renderRecipe, clearRecipe, highlightSelectedRecipe} from './view/recipeView';
 import List from './model/List';
+import Like from './model/Like';
 
 /*
      WEB APP төлөв
@@ -88,11 +90,38 @@ import List from './model/List';
             listView.renderItem(ritem);
         });
     }
+    
+    const controlLike = () => {
+        // 1) Like model uusgeh
+        if(! state.likes ) state.likes = new Like();
+
+        // 2) odoo haragdaj baiga like id2g olj awah
+        const currentId = state.recipe.id;
+
+        // 3) likelsan eshiig shalgah
+
+        if(state.likes.isLiked(currentId) === true){
+            state.likes.addlike(state.recipe.id, state.recipe.title, state.recipe.publisher, state.recipe.image_url); 
+            likeView.toggleLikeBtn(true);
+        }else{
+            state.likes.deletelike(state.recipe.id)
+            likeView.toggleLikeBtn(false);
+           // state.likes.addlike(state.recipe.id, state.recipe.title, state.recipe.publisher, state.recipe.image_url);
+        }
+
+    }
 
     elements.recipeDiv.addEventListener("click", e=>{
        if(e.target.matches('.recipe__btn, .recipe__btn *')){
         controlList();
        }
+    });
+
+
+    elements.recipeDiv.addEventListener("click", e=>{
+        if(e.target.matches('.recipe__love, .recipe__love *')){
+         controlLike();
+        }
     });
 
     elements.shoppingListDiv.addEventListener("click", e=> {
